@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mycelia AI - Özgür ve Doğru Yapay Zeka</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #212121;
+            color: #ececf1;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sol Menü (Sidebar) */
+        .sidebar {
+            width: 260px;
+            background-color: #171717;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .new-chat-btn {
+            border: 1px solid #4d4d4d;
+            background: transparent;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.3s;
+        }
+
+        .new-chat-btn:hover {
+            background-color: #2a2b32;
+        }
+
+        .history-list {
+            flex-grow: 1;
+            margin-top: 20px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #4d4d4d;
+            padding-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-footer {
+            background: none;
+            border: none;
+            color: white;
+            text-align: left;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .btn-footer:hover {
+            background-color: #2a2b32;
+        }
+
+        /* Ana Ekran (Chat Alanı) */
+        .main-chat {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .chat-header {
+            font-size: 32px;
+            font-weight: 600;
+            margin-top: 15vh;
+            color: #ffffff;
+        }
+
+        .chat-messages {
+            width: 100%;
+            max-width: 768px;
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Input Arama Alanı */
+        .input-container {
+            width: 100%;
+            max-width: 768px;
+            background-color: #2f2f2f;
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #b4b4b4;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: white;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: #8e8e93;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SOL PANEL (CHATGPT GİBİ OYNATILABİLİR GEÇMİŞ) -->
+    <div class="sidebar">
+        <button class="new-chat-btn">+ Yeni Sohbet</button>
+        
+        <div class="history-list" id="historyList">
+            <!-- Geçmiş aramalar buraya listelenecek -->
+            <div style="padding: 8px; color: #8e8e93;">Geçmiş (Yerel Hafıza)</div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn-footer" onclick="alert('Giriş Ekranı Yakında!')">🔑 Oturum Aç / Kaydol</button>
+            <button class="btn-footer" onclick="alert('Ayarlar: Dil, Yapay Zeka Sesi ve Karakteri')">⚙️ Ayarlar</button>
+        </div>
+    </div>
+
+    <!-- ANA SOHBET EKRANI -->
+    <div class="main-chat">
+        <div class="chat-header" id="welcomeText">Mycelia AI size nasıl yardımcı olabilir?</div>
+
+        <!-- Mesajların Listeleneceği Alan -->
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <!-- ARAMA ÇUBUĞU (İstediğin Düzen: Artı - Input - Mikrofon) -->
+        <div class="input-container">
+            <!-- Dosya/Fotoğraf Yükleme Butonu -->
+            <button class="icon-btn" title="Dosya Ekle" onclick="document.getElementById('fileInput').click()">➕</button>
+            <input type="file" id="fileInput" style="display: none;">
+
+            <!-- Metin Girişi -->
+            <input type="text" class="chat-input" id="userInput" placeholder="Mycelia AI'a bir şeyler sorun (Doğruluk Garantili)..." onkeypress="handleKeyPress(event)">
+
+            <!-- Ses Kayıt Butonu -->
+            <button class="icon-btn" title="Sesli Ara" id="micBtn" onclick="toggleVoice()">🎙️</button>
+        </div>
+    </div>
+
+    <script>
+        // Basit Arayüz Fonksiyonları
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                let input = document.getElementById('userInput');
+                if(input.value.trim() !== "") {
+                    // Ekrana mesajı yazdır
+                    let msgArea = document.getElementById('chatMessages');
+                    msgArea.innerHTML += `<div style="text-align: right; background: #3e3f4b; padding: 10px; border-radius: 8px; margin-left: auto; max-width: 80%;">${input.value}</div>`;
+                    
+                    // Geçmişe Ekle
+                    let history = document.getElementById('historyList');
+                    history.innerHTML += `<div class="btn-footer" style="font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">💬 ${input.value}</div>`;
+                    
+                    document.getElementById('welcomeText').style.display = 'none';
+                    input.value = "";
+                }
+            }
+        }
+
+        function toggleVoice() {
+            alert("Mikrofon erişimi istendi... (Python backend bağlandığında sesinizi metne dönüştürecek)");
+        }
+    // ENTER tuşuna basıldığında mesajı gönder
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+
+async function sendMessage() {
+    let input = document.getElementById('userInput');
+    let messageText = input.value.trim();
+    
+    if (messageText === "") return;
+
+    let msgArea = document.getElementById('chatMessages');
+    
+    // 1. Kullanıcının mesajını ekrana ekle
+    msgArea.innerHTML += `<div style="text-align: right; background: #3e3f4b; padding: 10px; border-radius: 8px; margin-left: auto; max-width: 80%; margin-bottom:10px;">👤 ${messageText}</div>`;
+    
+    // Geçmişe ekle (Yerel hafıza mantığı)
+    let history = document.getElementById('historyList');
+    history.innerHTML += `<div class="btn-footer" style="font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">💬 ${messageText}</div>`;
+    
+    document.getElementById('welcomeText').style.display = 'none';
+    input.value = "";
+
+    // 2. Python Backend'e soruyu gönder
+    try {
+        let response = await fetch('/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: messageText })
+        });
+        let data = await response.json();
+        
+        // 3. Yapay zekanın cevabını ekrana yazdır
+        msgArea.innerHTML += `<div style="text-align: left; background: #212121; border: 1px solid #4d4d4d; padding: 10px; border-radius: 8px; margin-right: auto; max-width: 80%; margin-bottom:10px;">🍄 <b>Mycelia AI:</b> ${data.response}</div>`;
+    } catch (error) {
+        msgArea.innerHTML += `<div style="text-align: left; color: #ff4a4a; padding: 10px;">❌ Python sunucusuna bağlanılamadı! (Önce app.py'yi çalıştırın)</div>`;
+    }
+    
+    // Ekranı otomatik aşağı kaydır
+    msgArea.scrollTop = msgArea.scrollHeight;
+}
+
+function toggleVoice() {
+    alert("Ses kayıt özelliği yakında aktif olacak.");
+}
+
+</body>
+</html>
