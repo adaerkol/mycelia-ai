@@ -3,258 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mycelia AI - Özgür ve Doğru Yapay Zeka</title>
+    <title>Mycelia AI - %100 Doğru ve Özgür Yapay Zeka</title>
+    <!-- Google Arama Motoru Ayarları -->
+    <meta name="description" content="Mycelia AI - %100 doğru bilgi veren, gizlilik odaklı, ücretsiz ve çok dilli yapay zeka asistanı.">
+    <meta name="keywords" content="Mycelia AI, Mycelia, yapay zeka, chatgpt benzeri, doğru yapay zeka, myceliaai, mycelia ai oyna">
+    <meta name="author" content="Mycelia AI">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #212121;
-            color: #ececf1;
-            display: flex;
-            height: 100vh;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #212121; color: #ececf1; display: flex; height: 100vh; overflow: hidden; }
 
         /* Sol Menü (Sidebar) */
-        .sidebar {
-            width: 260px;
-            background-color: #171717;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .new-chat-btn {
-            border: 1px solid #4d4d4d;
-            background: transparent;
-            color: white;
-            padding: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: left;
-            transition: 0.3s;
-        }
-
-        .new-chat-btn:hover {
-            background-color: #2a2b32;
-        }
-
-        .history-list {
-            flex-grow: 1;
-            margin-top: 20px;
-            overflow-y: auto;
-            font-size: 14px;
-        }
-
-        .sidebar-footer {
-            border-top: 1px solid #4d4d4d;
-            padding-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .btn-footer {
-            background: none;
-            border: none;
-            color: white;
-            text-align: left;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .btn-footer:hover {
-            background-color: #2a2b32;
-        }
+        .sidebar { width: 260px; background-color: #171717; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; z-index: 10; }
+        .new-chat-btn { border: 1px solid #4d4d4d; background: transparent; color: white; padding: 12px; border-radius: 5px; cursor: pointer; text-align: left; transition: 0.3s; width: 100%; }
+        .new-chat-btn:hover { background-color: #2a2b32; }
+        .history-list { flex-grow: 1; margin-top: 20px; overflow-y: auto; font-size: 14px; }
+        .history-item { padding: 8px; border-radius: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #c5c5d2; }
+        .history-item:hover { background-color: #2a2b32; color: white; }
+        .sidebar-footer { border-top: 1px solid #4d4d4d; padding-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .btn-footer { background: none; border: none; color: white; text-align: left; padding: 10px; cursor: pointer; border-radius: 5px; font-size: 14px; width: 100%; display: flex; align-items: center; gap: 10px; }
+        .btn-footer:hover { background-color: #2a2b32; }
 
         /* Ana Ekran (Chat Alanı) */
-        .main-chat {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
+        .main-chat { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 20px; position: relative; background-color: #212121; }
+        .chat-header { font-size: 32px; font-weight: 600; margin-top: 20vh; color: #ffffff; text-align: center; }
+        .chat-messages { width: 100%; max-width: 768px; flex-grow: 1; overflow-y: auto; margin-top: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
+        
+        /* Mesaj Balonları */
+        .msg-user { text-align: right; background: #3e3f4b; padding: 12px 16px; border-radius: 15px 15px 0 15px; margin-left: auto; max-width: 80%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); line-height: 1.5; }
+        .msg-ai { text-align: left; background: #2f2f2f; border: 1px solid #4d4d4d; padding: 12px 16px; border-radius: 15px 15px 15px 0; margin-right: auto; max-width: 80%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); line-height: 1.5; }
 
-        .chat-header {
-            font-size: 32px;
-            font-weight: 600;
-            margin-top: 15vh;
-            color: #ffffff;
-        }
+        /* Arama Çubuğu (Artı - Input - Mikrofon) */
+        .input-container { width: 100%; max-width: 768px; background-color: #2f2f2f; border-radius: 12px; padding: 6px 12px; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-bottom: 10px; border: 1px solid #424242; }
+        .icon-btn { background: none; border: none; color: #b4b4b4; font-size: 20px; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; transition: 0.2s; border-radius: 5px; }
+        .icon-btn:hover { color: white; background-color: #383838; }
+        .chat-input { flex-grow: 1; background: transparent; border: none; color: white; font-size: 16px; padding: 10px; outline: none; }
+        .chat-input::placeholder { color: #8e8e93; }
 
-        .chat-messages {
-            width: 100%;
-            max-width: 768px;
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Input Arama Alanı */
-        .input-container {
-            width: 100%;
-            max-width: 768px;
-            background-color: #2f2f2f;
-            border-radius: 12px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: #b4b4b4;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-
-        .icon-btn:hover {
-            color: white;
-        }
-
-        .chat-input {
-            flex-grow: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 16px;
-            padding: 10px;
-            outline: none;
-        }
-
-        .chat-input::placeholder {
-            color: #8e8e93;
-        }
+        /* Pencereler (Giriş ve Ayarlar Modalları) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-box { background: #2d2d2d; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 1px solid #4d4d4d; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+        .modal-close:hover { color: white; }
+        .modal-title { font-size: 22px; font-weight: 600; margin-bottom: 20px; text-align: center; }
+        
+        /* Buton ve Seçenek Tasarımları */
+        .login-btn { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #4d4d4d; background: #212121; color: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .login-btn:hover { background: #383838; }
+        .setting-item { margin-bottom: 15px; }
+        .setting-item label { display: block; font-size: 14px; color: #aaa; margin-bottom: 5px; }
+        .setting-select { width: 100%; padding: 10px; background: #212121; color: white; border: 1px solid #4d4d4d; border-radius: 6px; outline: none; }
     </style>
 </head>
 <body>
 
-    <!-- SOL PANEL (CHATGPT GİBİ OYNATILABİLİR GEÇMİŞ) -->
+    <!-- SIDEBAR (GEÇMİŞ & AYARLAR) -->
     <div class="sidebar">
-        <button class="new-chat-btn">+ Yeni Sohbet</button>
-        
+        <button class="new-chat-btn" id="newChatText" onclick="clearChat()">+ Yeni Sohbet</button>
         <div class="history-list" id="historyList">
-            <!-- Geçmiş aramalar buraya listelenecek -->
-            <div style="padding: 8px; color: #8e8e93;">Geçmiş (Yerel Hafıza)</div>
+            <div id="historyTitle" style="padding: 8px; color: #8e8e93; font-size: 12px;">Geçmiş (Tarayıcı Hafızası)</div>
         </div>
-
         <div class="sidebar-footer">
-            <button class="btn-footer" onclick="alert('Giriş Ekranı Yakında!')">🔑 Oturum Aç / Kaydol</button>
-            <button class="btn-footer" onclick="alert('Ayarlar: Dil, Yapay Zeka Sesi ve Karakteri')">⚙️ Ayarlar</button>
+            <button class="btn-footer" id="loginBtnSidebar" onclick="openModal('loginModal')">🔑 Oturum Aç / Kaydol</button>
+            <button class="btn-footer" id="settingsBtnSidebar" onclick="openModal('settingsModal')">⚙️ Ayarlar</button>
         </div>
     </div>
 
-    <!-- ANA SOHBET EKRANI -->
+    <!-- ANA CHAT EKRANI -->
     <div class="main-chat">
         <div class="chat-header" id="welcomeText">Mycelia AI size nasıl yardımcı olabilir?</div>
-
-        <!-- Mesajların Listeleneceği Alan -->
         <div class="chat-messages" id="chatMessages"></div>
 
-        <!-- ARAMA ÇUBUĞU (İstediğin Düzen: Artı - Input - Mikrofon) -->
+        <!-- SEARCH / GİRİŞ ALANI (Artı - İnput - Mikrofon Düzeni) -->
         <div class="input-container">
-            <!-- Dosya/Fotoğraf Yükleme Butonu -->
-            <button class="icon-btn" title="Dosya Ekle" onclick="document.getElementById('fileInput').click()">➕</button>
-            <input type="file" id="fileInput" style="display: none;">
+            <button class="icon-btn" title="Dosya/Fotoğraf Yükle" onclick="document.getElementById('fileInput').click()">➕</button>
+            <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(event)">
+            
+            <input type="text" class="chat-input" id="userInput" placeholder="Mycelia AI'a sorun (Doğruluk Garantili)..." onkeypress="handleKeyPress(event)">
+            
+            <button class="icon-btn" title="Ses Kaydı Al" id="micBtn" onclick="startVoiceRecognition()">🎙️</button>
+        </div>
+    </div>
 
-            <!-- Metin Girişi -->
-            <input type="text" class="chat-input" id="userInput" placeholder="Mycelia AI'a bir şeyler sorun (Doğruluk Garantili)..." onkeypress="handleKeyPress(event)">
+    <!-- 🔑 OTURUM AÇMA PANELİ -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+            <div class="modal-title" id="loginModalTitle">Mycelia AI'a Giriş Yap</div>
+            <button class="login-btn" onclick="alert('Google ile Giriş Sistemi Entegre Ediliyor...')">🌐 Google ile Devam Et</button>
+            <button class="login-btn" onclick="alert('Apple ile Giriş Sistemi Entegre Ediliyor...')">🍏 Apple ile Devam Et</button>
+            <button class="login-btn" onclick="alert('E-posta paneli aktif ediliyor...')">✉️ E-posta ile Giriş Yap</button>
+            <button class="login-btn" onclick="alert('Telefon doğrulama sms sistemi bağlanıyor...')">📱 Telefon No ile Giriş Yap</button>
+        </div>
+    </div>
 
-            <!-- Ses Kayıt Butonu -->
-            <button class="icon-btn" title="Sesli Ara" id="micBtn" onclick="toggleVoice()">🎙️</button>
+    <!-- ⚙️ AYARLAR PANELİ -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+            <div class="modal-title" id="settingsModalTitle">Sistem Ayarları</div>
+            <div class="setting-item">
+                <label id="labelTone">AI Konuşma Şekli (Karakter)</label>
+                <select class="setting-select" id="aiTone">
+                    <option value="bilimsel">Bilimsel ve Net (%100 Doğruluk Modu)</option>
+                    <option value="arkadas">Arkadaş Canlısı ve Samimi</option>
+                    <option value="eglenceli">Eğlenceli ve Esprili</option>
+                    <option value="resmi">Resmi ve Profesyonel</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label id="labelLang">Sistem Dili (Her Dil Seçeneği)</label>
+                <select class="setting-select" id="systemLang" onchange="changeLanguageLocally()">
+                    <option value="tr">Türkçe (TR)</option>
+                    <option value="en">English (EN)</option>
+                    <option value="es">Español (ES)</option>
+                    <option value="de">Deutsch (DE)</option>
+                    <option value="fr">Français (FR)</option>
+                    <option value="it">Italiano (IT)</option>
+                    <option value="ru">Русский (RU)</option>
+                    <option value="ar">العربية (AR)</option>
+                </select>
+            </div>
+            <button class="login-btn" id="saveSettingsBtn" style="background:#10a37f; border:none;" onclick="saveSettings()">Ayarları Kaydet</button>
         </div>
     </div>
 
     <script>
-        // Basit Arayüz Fonksiyonları
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                let input = document.getElementById('userInput');
-                if(input.value.trim() !== "") {
-                    // Ekrana mesajı yazdır
-                    let msgArea = document.getElementById('chatMessages');
-                    msgArea.innerHTML += `<div style="text-align: right; background: #3e3f4b; padding: 10px; border-radius: 8px; margin-left: auto; max-width: 80%;">${input.value}</div>`;
-                    
-                    // Geçmişe Ekle
-                    let history = document.getElementById('historyList');
-                    history.innerHTML += `<div class="btn-footer" style="font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">💬 ${input.value}</div>`;
-                    
-                    document.getElementById('welcomeText').style.display = 'none';
-                    input.value = "";
-                }
-            }
-        }
+        let currentTone = "bilimsel";
+        let currentLang = "tr";
 
-        function toggleVoice() {
-            alert("Mikrofon erişimi istendi... (Python backend bağlandığında sesinizi metne dönüştürecek)");
-        }
-    // ENTER tuşuna basıldığında mesajı gönder
-function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-        sendMessage();
-    }
-}
-
-async function sendMessage() {
-    let input = document.getElementById('userInput');
-    let messageText = input.value.trim();
-    
-    if (messageText === "") return;
-
-    let msgArea = document.getElementById('chatMessages');
-    
-    // 1. Kullanıcının mesajını ekrana ekle
-    msgArea.innerHTML += `<div style="text-align: right; background: #3e3f4b; padding: 10px; border-radius: 8px; margin-left: auto; max-width: 80%; margin-bottom:10px;">👤 ${messageText}</div>`;
-    
-    // Geçmişe ekle (Yerel hafıza mantığı)
-    let history = document.getElementById('historyList');
-    history.innerHTML += `<div class="btn-footer" style="font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">💬 ${messageText}</div>`;
-    
-    document.getElementById('welcomeText').style.display = 'none';
-    input.value = "";
-
-    // 2. Python Backend'e soruyu gönder
-    try {
-        let response = await fetch('/ask', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: messageText })
-        });
-        let data = await response.json();
-        
-        // 3. Yapay zekanın cevabını ekrana yazdır
-        msgArea.innerHTML += `<div style="text-align: left; background: #212121; border: 1px solid #4d4d4d; padding: 10px; border-radius: 8px; margin-right: auto; max-width: 80%; margin-bottom:10px;">🍄 <b>Mycelia AI:</b> ${data.response}</div>`;
-    } catch (error) {
-        msgArea.innerHTML += `<div style="text-align: left; color: #ff4a4a; padding: 10px;">❌ Python sunucusuna bağlanılamadı! (Önce app.py'yi çalıştırın)</div>`;
-    }
-    
-    // Ekranı otomatik aşağı kaydır
-    msgArea.scrollTop = msgArea.scrollHeight;
-}
-
-function toggleVoice() {
-    alert("Ses kayıt özelliği yakında aktif olacak.");
-}
-
-</body>
-</html>
+        const languages = {
+            tr: { welcome: "Mycelia AI size nasıl yardımcı olabilir?", placeholder: "Mycelia AI'a sorun (Doğruluk Garantili)...", newChat: "+ Yeni Sohbet", history: "Geçmiş (Tarayıcı Hafızası)", login: "🔑 Oturum Aç / Kaydol", settings: "⚙️ Ayarlar", loginTitle: "Mycelia AI'a Giriş Yap", settingsTitle: "Sistem Ayarları", labelTone: "AI Konuşma Şekli (Karakter)", labelLang: "Sistem Dili (Her Dil Seçeneği)", save: "Ayarları Kaydet" },
